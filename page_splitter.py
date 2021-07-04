@@ -13,10 +13,10 @@ def insert_suffix(pdf: str, suffix: str) -> str:
     
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Splits an input PDF into two PDFs by letter and legal page size.")
-    parser.add_argument("source_pdf")
-    parser.add_argument("--letter_pdf")
-    parser.add_argument("--legal_pdf")
+    parser = argparse.ArgumentParser(description="Splits a PDF into two PDFs by letter and legal page size.")
+    parser.add_argument("source_pdf", help="Name of the source PDF with mixed page size, E.g. SamplePrint-MultipleSize.pdf")
+    parser.add_argument("--letter_pdf", help="Name of the PDF to write to containing letter pages (default: <source_pdf>_letter.pdf)")
+    parser.add_argument("--legal_pdf", help="Name of the PDF to write to containing legal pages (default: <source_pdf>_legal.pdf)")
     args = parser.parse_args()
     
     letter_pdf = args.letter_pdf if args.letter_pdf else insert_suffix(args.source_pdf, "_letter")
