@@ -1,4 +1,4 @@
-# legal-letter-pdf-splitter
+# legal-letter-pdf-separator
 This Python script will take an input PDF and split it into two PDFs by legal and letter size.
 
 ## Install
@@ -11,7 +11,7 @@ pip install -r requirements.txt
 
 ## Usage
 ```
-usage: page_splitter.py [-h] [--letter_pdf LETTER_PDF] [--legal_pdf LEGAL_PDF] source_pdf
+usage: page_separator.py [-h] [--letter_pdf LETTER_PDF] [--legal_pdf LEGAL_PDF] source_pdf
 
 Splits a PDF into two PDFs by letter and legal page size.
 

@@ -1,11 +1,27 @@
-from PyPDF2 import PdfFileWriter, PdfFileReader
 import argparse
+import sys
+from enum import Enum
+
+from PyPDF2 import PdfFileWriter, PdfFileReader
 from PyPDF2.pdf import PageObject
 
-def is_letter(page: PageObject) -> bool:
-    if page.mediaBox.getHeight() == 792:
-        return True
-    return False
+LETTER_RATIO = 11 / 8.5
+LEGAL_RATIO = 14 / 8.5
+MARGIN_OF_ERROR = 0.05 # page ratio should differ by at most this percent
+
+class PageType(Enum):
+    UNKNOWN = 0
+    LETTER = 1
+    LEGAL = 2
+    
+
+def page_type(page: PageObject) -> PageType:
+    ratio = page.mediaBox.getHeight() / page.mediaBox.getWidth()
+    if LETTER_RATIO*(1-MARGIN_OF_ERROR) < ratio < LETTER_RATIO*(1+MARGIN_OF_ERROR):
+        return PageType.LETTER
+    elif LEGAL_RATIO*(1-MARGIN_OF_ERROR) < ratio < LEGAL_RATIO*(1+MARGIN_OF_ERROR):
+        return PageType.LEGAL
+    return PageType.UNKNOWN
 
 
 def insert_suffix(pdf: str, suffix: str) -> str:
@@ -28,10 +44,13 @@ if __name__ == '__main__':
     
     for i in range(reader.getNumPages()):
         page = reader.getPage(i)
-        if is_letter(page):
+        ptype = page_type(page)
+        if ptype == PageType.LETTER:
             letter_writer.addPage(page)
-        else:
+        elif ptype == PageType.LEGAL:
             legal_writer.addPage(page)
+        else:
+            sys.exit("Could not infer page size for page #{}".format(i))
         
     with open(letter_pdf, "wb") as f:
         letter_writer.write(f)
