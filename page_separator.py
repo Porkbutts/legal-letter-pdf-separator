@@ -8,6 +8,8 @@ from PyPDF2.pdf import PageObject
 LETTER_RATIO = 11 / 8.5
 LEGAL_RATIO = 14 / 8.5
 MARGIN_OF_ERROR = 0.05 # page ratio should differ by at most this percent
+if MARGIN_OF_ERROR >= 0.12:
+    sys.exit("MARGIN_OF_ERROR is too large! page type detection will overlap")
 
 class PageType(Enum):
     UNKNOWN = 0
