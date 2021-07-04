@@ -2,7 +2,7 @@ from PyPDF2 import PdfFileWriter, PdfFileReader
 import argparse
 from PyPDF2.pdf import PageObject
 
-def is_letter(page) -> bool:
+def is_letter(page: PageObject) -> bool:
     if page.mediaBox.getHeight() == 792:
         return True
     return False
