@@ -17,9 +17,9 @@ class PageType(Enum):
 
 def page_type(page: PageObject) -> PageType:
     ratio = page.mediaBox.getHeight() / page.mediaBox.getWidth()
-    if LETTER_RATIO*(1-MARGIN_OF_ERROR) < ratio < LETTER_RATIO*(1+MARGIN_OF_ERROR):
+    if abs(LETTER_RATIO - ratio) < MARGIN_OF_ERROR:
         return PageType.LETTER
-    elif LEGAL_RATIO*(1-MARGIN_OF_ERROR) < ratio < LEGAL_RATIO*(1+MARGIN_OF_ERROR):
+    elif abs(LEGAL_RATIO - ratio) < MARGIN_OF_ERROR:
         return PageType.LEGAL
     return PageType.UNKNOWN
 
