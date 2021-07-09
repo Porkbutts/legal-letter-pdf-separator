@@ -5,8 +5,8 @@ This python program takes an input PDF and split it into two PDFs by legal and l
 
 ### Install
 ```bash
-python3 -m virtualenv ./venv
-./venv/bin/activate          # Linux/OSX
+virtualenv
+source ./venv/bin/activate   # Linux/OSX
 ./venv/Scripts/activate.ps1  # Windows powershell
 pip install -r requirements.txt
 ```
