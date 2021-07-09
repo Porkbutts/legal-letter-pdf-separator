@@ -1,5 +1,6 @@
 import argparse
 import sys
+
 from enum import Enum
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
@@ -29,33 +30,36 @@ def page_type(page: PageObject) -> PageType:
 def insert_suffix(pdf: str, suffix: str) -> str:
     return pdf.split(".pdf")[0] + suffix + ".pdf"
     
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Splits a PDF into two PDFs by letter and legal page size.")
-    parser.add_argument("source_pdf", help="Name of the source PDF with mixed page size, E.g. SamplePrint-MultipleSize.pdf")
-    parser.add_argument("--letter_pdf", help="Name of the PDF to write to containing letter pages (default: <source_pdf>_letter.pdf)")
-    parser.add_argument("--legal_pdf", help="Name of the PDF to write to containing legal pages (default: <source_pdf>_legal.pdf)")
-    args = parser.parse_args()
-    
-    letter_pdf = args.letter_pdf if args.letter_pdf else insert_suffix(args.source_pdf, "_letter")
-    legal_pdf = args.legal_pdf if args.legal_pdf else insert_suffix(args.source_pdf, "_legal")
-    
-    reader = PdfFileReader(open(args.source_pdf, "rb"))
-    letter_writer = PdfFileWriter()
+def main(source_pdf: str, legal_pdf: str, letter_pdf: str):
+    reader = PdfFileReader(open(source_pdf, "rb"))
     legal_writer = PdfFileWriter()
+    letter_writer = PdfFileWriter()
     
     for i in range(reader.getNumPages()):
         page = reader.getPage(i)
         ptype = page_type(page)
-        if ptype == PageType.LETTER:
-            letter_writer.addPage(page)
-        elif ptype == PageType.LEGAL:
+        if ptype == PageType.LEGAL:
             legal_writer.addPage(page)
+        elif ptype == PageType.LETTER:
+            letter_writer.addPage(page)
         else:
             sys.exit("Could not infer page size for page #{}".format(i))
+        
+    with open(legal_pdf, "wb") as f:
+        legal_writer.write(f)
         
     with open(letter_pdf, "wb") as f:
         letter_writer.write(f)
         
-    with open(legal_pdf, "wb") as f:
-        legal_writer.write(f)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Splits a PDF into two PDFs by letter and legal page size.")
+    parser.add_argument("source_pdf", help="Name of the source PDF with mixed page size, E.g. SamplePrint-MultipleSize.pdf")
+    parser.add_argument("--legal_pdf", help="Name of the PDF to write to containing legal pages (default: <source_pdf>_legal.pdf)")
+    parser.add_argument("--letter_pdf", help="Name of the PDF to write to containing letter pages (default: <source_pdf>_letter.pdf)")
+    args = parser.parse_args()
+    
+    legal_pdf = args.legal_pdf if args.legal_pdf else insert_suffix(args.source_pdf, "_legal")
+    letter_pdf = args.letter_pdf if args.letter_pdf else insert_suffix(args.source_pdf, "_letter")
+    
+    main(args.source_pdf, legal_pdf, letter_pdf)
+    
