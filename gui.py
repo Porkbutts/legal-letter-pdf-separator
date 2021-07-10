@@ -13,7 +13,7 @@ def on_drop(event):
     d = event.data
     d = d[1:-1] if d.startswith("{") and d.endswith("}") else d
     source_pdf.set(d)
-    output_dir.set(os.path.dirname(event.data))
+    output_dir.set(os.path.dirname(d))
 
 def on_clicked():
     source_pdf_str = source_pdf.get()
