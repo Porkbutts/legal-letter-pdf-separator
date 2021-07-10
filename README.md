@@ -1,7 +1,12 @@
 # legal-letter-pdf-separator
 This python program takes an input PDF and split it into two PDFs by legal and letter size. The GUI is built with `tkinter` and wraps the underlying command-line tool.
 
-## Command-line Usage
+## Graphical User Interface
+Start it with `python gui.py`
+
+![image](https://user-images.githubusercontent.com/7364664/125169732-5db22c80-e160-11eb-8994-14e18f022fa1.png)
+
+## Command-line
 
 ### Install
 ```bash
