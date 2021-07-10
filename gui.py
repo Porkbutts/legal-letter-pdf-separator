@@ -10,7 +10,9 @@ from page_separator import insert_suffix, main
 BG_COLOR = "#D4F1F4"
 
 def on_drop(event):
-    source_pdf.set(event.data)
+    d = event.data
+    d = d[1:-1] if d.startswith("{") and d.endswith("}") else d
+    source_pdf.set(d)
     output_dir.set(os.path.dirname(event.data))
 
 def on_clicked():
