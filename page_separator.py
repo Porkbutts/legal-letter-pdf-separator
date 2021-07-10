@@ -30,10 +30,15 @@ def page_type(page: PageObject) -> PageType:
 def insert_suffix(pdf: str, suffix: str) -> str:
     return pdf.split(".pdf")[0] + suffix + ".pdf"
     
-def main(source_pdf: str, legal_pdf: str, letter_pdf: str):
+def main(source_pdf: str, legal_pdf: str = None, letter_pdf: str = None, unknown_pdf: str = None):
+    legal_pdf = legal_pdf if legal_pdf else insert_suffix(source_pdf, "_legal")
+    letter_pdf = letter_pdf if letter_pdf else insert_suffix(source_pdf, "_letter")
+    unknown_pdf = unknown_pdf if unknown_pdf else insert_suffix(source_pdf, "_unknown")
+    
     reader = PdfFileReader(open(source_pdf, "rb"))
     legal_writer = PdfFileWriter()
     letter_writer = PdfFileWriter()
+    unknown_writer = PdfFileWriter()
     
     for i in range(reader.getNumPages()):
         page = reader.getPage(i)
@@ -43,7 +48,7 @@ def main(source_pdf: str, legal_pdf: str, letter_pdf: str):
         elif ptype == PageType.LETTER:
             letter_writer.addPage(page)
         else:
-            sys.exit("Could not infer page size for page #{}".format(i))
+            unknown_writer.addPage(page)
         
     with open(legal_pdf, "wb") as f:
         legal_writer.write(f)
@@ -51,15 +56,16 @@ def main(source_pdf: str, legal_pdf: str, letter_pdf: str):
     with open(letter_pdf, "wb") as f:
         letter_writer.write(f)
         
+    if unknown_writer.getNumPages():
+        with open(unknown_pdf, "wb") as f:
+            unknown_writer.write(f)
+        
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Splits a PDF into two PDFs by letter and legal page size.")
     parser.add_argument("source_pdf", help="Name of the source PDF with mixed page size, E.g. SamplePrint-MultipleSize.pdf")
     parser.add_argument("--legal_pdf", help="Name of the PDF to write to containing legal pages (default: <source_pdf>_legal.pdf)")
     parser.add_argument("--letter_pdf", help="Name of the PDF to write to containing letter pages (default: <source_pdf>_letter.pdf)")
+    parser.add_argument("--unknown_pdf", help="Failed to detect pages will be written here if any (default: <source_pdf>_unknown.pdf)")
     args = parser.parse_args()
-    
-    legal_pdf = args.legal_pdf if args.legal_pdf else insert_suffix(args.source_pdf, "_legal")
-    letter_pdf = args.letter_pdf if args.letter_pdf else insert_suffix(args.source_pdf, "_letter")
-    
-    main(args.source_pdf, legal_pdf, letter_pdf)
+    main(args.source_pdf, args.legal_pdf, args.letter_pdf, args.unknown_pdf)
     
